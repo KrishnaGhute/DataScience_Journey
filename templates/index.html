@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Housing Price Predictor</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        #map {
+            height: 550px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .form-container {
+            max-height: 550px;
+            overflow-y: auto;
+        }
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container my-4">
+        <div class="row text-center mb-3">
+            <div class="col-12">
+                <h2 class="fw-bold text-primary">California Real-Time Price Engine</h2>
+                <p class="text-muted m-0">
+                    <span class="badge bg-secondary status-badge">💡 Tip: Double-Click the map to toggle mouse-hover live tracking mode!</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4 bg-white p-4 rounded-3 shadow-sm">
+            <div class="col-md-5 form-container">
+                <form id="predictionForm">
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">Median Income:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="MedInc" value="4">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">House Age:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="HouseAge" value="28">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">Average Rooms:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="AveRooms" value="5">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">Average Bedrooms:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="AveBedrms" value="1">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">Population:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="Population" value="1400">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small">Average Occupancy:</label>
+                        <input type="number" step="any" class="form-control form-control-sm" id="AveOccup" value="3">
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Latitude:</label>
+                            <input type="text" class="form-control form-control-sm bg-light" id="Latitude" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Longitude:</label>
+                            <input type="text" class="form-control form-control-sm bg-light" id="Longitude" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-7 position-relative">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-10 text-center">
+                <div class="card p-3 shadow-sm border-primary">
+                    <h5 class="text-muted mb-1 small uppercase text-tracking">Live Prediction Panel</h5>
+                    <h2 class="m-0 text-success fw-bold" id="livePriceDisplay">Calculating initial position...</h2>
+                    <span id="modeIndicator" class="text-muted small mt-1">Status: Click map or fill values to calculate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Setup Map Center directly over San Francisco area as baseline entry
+        const map = L.map('map', { doubleClickZoom: false }).setView([37.7749, -122.4194], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Fetch and draw California Boundary Shade
+        fetch('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/california.geojson')
+            .then(res => res.json())
+            .then(geojsonData => {
+                L.geoJSON(geojsonData, {
+                    style: {
+                        color: "#3b82f6",
+                        weight: 2,
+                        fillColor: "#3b82f6",
+                        fillOpacity: 0.15
+                    }
+                }).addTo(map);
+            });
+
+        let liveTracking = false;
+        // Start marker at the center point
+        let marker = L.marker([37.7749, -122.4194]).addTo(map);
+
+        // Central trigger to update predictions via API
+        function fetchPrediction(lat, lng) {
+            document.getElementById('Latitude').value = lat.toFixed(4);
+            document.getElementById('Longitude').value = lng.toFixed(4);
+
+            // THE FIX: Explicitly parse input strings to numeric float/ints right here
+            const payload = {
+                MedInc: parseFloat(document.getElementById('MedInc').value) || 0,
+                HouseAge: parseFloat(document.getElementById('HouseAge').value) || 0,
+                AveRooms: parseFloat(document.getElementById('AveRooms').value) || 0,
+                AveBedrms: parseFloat(document.getElementById('AveBedrms').value) || 0,
+                Population: parseFloat(document.getElementById('Population').value) || 0,
+                AveOccup: parseFloat(document.getElementById('AveOccup').value) || 0,
+                Latitude: parseFloat(lat),
+                Longitude: parseFloat(lng)
+            };
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('livePriceDisplay').innerText = data.price;
+                    document.getElementById('livePriceDisplay').className = "m-0 text-success fw-bold";
+                } else {
+                    document.getElementById('livePriceDisplay').innerText = "Error: " + data.error;
+                    document.getElementById('livePriceDisplay').className = "m-0 text-danger fs-5 fw-semibold";
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                document.getElementById('livePriceDisplay').innerText = "Server Connection Failed";
+                document.getElementById('livePriceDisplay').className = "m-0 text-danger fs-5 fw-semibold";
+            });
+        }
+
+        // Run an initial calculation right away when the app loads on Chrome
+        fetchPrediction(37.7749, -122.4194);
+
+        // Action 1: Standard Simple Map Clicking
+        map.on('click', function(e) {
+            if (!liveTracking) {
+                marker.setLatLng(e.latlng);
+                fetchPrediction(e.latlng.lat, e.latlng.lng);
+            }
+        });
+
+        // Action 2: Double Click to Toggle Cursor-Tracking Sweep
+        map.on('dblclick', function(e) {
+            liveTracking = !liveTracking;
+            const indicator = document.getElementById('modeIndicator');
+            
+            if (liveTracking) {
+                indicator.innerHTML = "🔴 <strong>Live Cursor Tracking Active!</strong> Move mouse to sweep prices.";
+                indicator.className = "text-danger small mt-1";
+                map.getContainer().style.cursor = 'crosshair';
+            } else {
+                indicator.innerHTML = "Status: Static Pin Mode. Click map to set custom coordinates.";
+                indicator.className = "text-muted small mt-1";
+                map.getContainer().style.cursor = '';
+            }
+        });
+
+        // Action 3: Mouse Cursor Sweeping
+        map.on('mousemove', function(e) {
+            if (liveTracking) {
+                marker.setLatLng(e.latlng);
+                fetchPrediction(e.latlng.lat, e.latlng.lng);
+            }
+        });
+
+        // Form fields change listener to update output live
+        document.querySelectorAll('#predictionForm input').forEach(input => {
+            input.addEventListener('input', () => {
+                const currentLatLng = marker.getLatLng();
+                fetchPrediction(currentLatLng.lat, currentLatLng.lng);
+            });
+        });
+    </script>
+</body>
+</html>
