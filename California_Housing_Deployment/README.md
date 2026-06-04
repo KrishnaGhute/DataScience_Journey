@@ -17,9 +17,8 @@ An interactive, production-ready full-stack web application that leverages an op
 3. **Dynamic Baseline Land Valuator:** Implements a custom spatial economic proximity engine. If a user hovers over empty terrains or unbuilt parcels where property markers scale below zero, the system automatically runs Euclidean calculations against major California economic hubs (SF & LA) to generate an accurate raw land asset valuation.
 4. **Advanced Geospatial Analysis Layers:** Contains advanced notebook visualizations translating individual points into structural market trend surfaces.
 
-> ### ⬢ Geospatial Price Surface Density & Hexagonal Binning
-> ![Geospatial Analysis Layers](path_to_your_screenshot/geospatial_layers.png)
-> *Placeholder: Replace the path above with a screenshot of your interactive Plotly Hexbin or Density Map layers.*
+### ⬢ Geospatial Price Surface Density
+<img src="https://raw.githubusercontent.com/KrishnaGhute/DataScience_Journey/main/California_Housing_Deployment/image/Screenshot%202026-06-04%20100035.png" alt="Geospatial Analysis Layers" width="600">
 
 ---
 
