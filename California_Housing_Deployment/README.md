@@ -7,9 +7,7 @@ An interactive, production-ready full-stack web application that leverages an op
 ## 🚀 Live Demo & Visuals
 
 > ### 🖥️ Interactive Web Application Interface
-> ![Web App UI Dashboard]([path_to_your_screenshot/web_app_ui.png](https://github.com/KrishnaGhute/DataScience_Journey/blob/main/California_Housing_Deployment/image/Screenshot%202026-06-04%20100344.png))
-> *Placeholder: Replace the path above with your main frontend web map dashboard screenshot.*
-
+> !https://github.com/KrishnaGhute/DataScience_Journey/blob/main/California_Housing_Deployment/image/Screenshot%202026-06-04%20100344.png
 ---
 
 ## 📊 Core Architecture & Features
