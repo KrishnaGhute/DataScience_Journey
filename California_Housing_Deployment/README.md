@@ -6,8 +6,8 @@ An interactive, production-ready full-stack web application that leverages an op
 
 ## 🚀 Live Demo & Visuals
 
-> ### 🖥️ Interactive Web Application Interface
-> !https://github.com/KrishnaGhute/DataScience_Journey/blob/main/California_Housing_Deployment/image/Screenshot%202026-06-04%20100344.png
+### 🖥️ Interactive Web Application Interface
+<img src="https://raw.githubusercontent.com/KrishnaGhute/DataScience_Journey/main/California_Housing_Deployment/image/Screenshot%202026-06-04%20100344.png" alt="California Housing Dashboard" width="600">
 ---
 
 ## 📊 Core Architecture & Features
