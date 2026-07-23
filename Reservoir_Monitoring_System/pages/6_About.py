@@ -166,8 +166,14 @@ left, right = st.columns([1,2])
 
 with left:
 
+    profile_path = os.path.join(
+        "Reservoir_Monitoring_System",
+        "assets",
+        "profile.jpg.png"
+    )
+
     st.image(
-        "assets/profile.jpg.png",
+        profile_path,
         use_container_width=True
     )
 
