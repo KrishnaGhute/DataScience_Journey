@@ -1,5 +1,9 @@
 import streamlit as st
 
+import os
+import streamlit as st
+
+
 def app_sidebar():
 
     with st.sidebar:
@@ -8,8 +12,18 @@ def app_sidebar():
         # LOGO
         # ----------------------------------
 
+        logo_path = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "assets",
+            "logo.png"
+        )
+
+        logo_path = os.path.abspath(logo_path)
+
+
         st.image(
-            "assets/logo.png",
+            logo_path,
             width=80
         )
 
