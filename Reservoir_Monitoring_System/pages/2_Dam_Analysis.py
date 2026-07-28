@@ -38,7 +38,7 @@ st.set_page_config(
 
 app_sidebar()
 
-st.title("📈 Reservoir Analysis")
+st.title("📈 Single Reservoir Analysis")
 st.markdown("Analyze historical performance of an individual reservoir.")
 
 st.divider()
