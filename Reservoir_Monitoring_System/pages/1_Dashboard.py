@@ -31,10 +31,10 @@ st.set_page_config(
 
 app_sidebar()
 
-st.title("🌊 South India Reservoir Monitoring System")
+st.title("🌊 India Reservoir Monitoring System")
 
 st.caption(
-    "Real-time monitoring and operational overview of major reservoirs across South India."
+    "Real-time monitoring and operational overview of major reservoirs with latest entries."
 )
 
 # ==========================================================
