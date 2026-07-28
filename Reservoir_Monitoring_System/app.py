@@ -11,7 +11,7 @@ from utils.sidebar import app_sidebar
 # =====================================================
 
 st.set_page_config(
-    page_title="Reservoir Intelligence Platform",
+    page_title="Reservoir Monitoring System",
     page_icon="💧",
     layout="wide"
 )
@@ -127,7 +127,7 @@ total_records = len(records)
 st.markdown("""
 <div class="hero">
 
-<h1>💧 Reservoir Intelligence Platform</h1>
+<h1>💧 Reservoir Monitoring System</h1>
 
 <p>
 A cloud-based water resource monitoring and analytics system
